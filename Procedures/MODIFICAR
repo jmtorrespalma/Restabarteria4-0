@@ -1,0 +1,48 @@
+create or replace
+procedure modificar(in_idempleado number, nueva_posicion varchar2) is
+	is_camarero number;
+	is_gerente number;
+	is_cocinero number;
+begin
+
+	if(nueva_posicion not in('gerente', 'camarero', 'cocinero')) then
+		raise_application_error( -20004, 'No puede introducir un tipo de empleado inexistente');
+	end if;
+
+	select count (*) into is_camarero from camarero where idempleado=in_idempleado;
+	select count (*) into is_cocinero from cocinero where idempleado=in_idempleado;
+	select count (*) into is_gerente from gerente where idempleado=in_idempleado;
+
+	if(is_camarero=1) then
+		delete from sirve where idempleado = in_idempleado;
+		delete from cobra where idempleado = in_idempleado;
+		delete from camarero where idempleado = in_idempleado;
+
+	end if;
+
+	if(is_cocinero=1) then
+		delete from prepara where idempleado = in_idempleado;
+		delete from cocinero where idempleado = in_idempleado;
+
+	end if;
+
+	if(is_gerente=1) then
+		update da_alta set idgerente=NULL where idgerente = in_idempleado;
+		delete from gerente where idempleado = in_idempleado;
+
+	end if;
+
+	case nueva_posicion
+		when 'gerente' then	insert into gerente values(in_idempleado);
+
+		when 'camarero' then insert into camarero values(in_idempleado);
+
+		when 'cocinero' then insert into cocinero values(in_idempleado);			
+
+	end case;
+
+	commit;
+	
+
+end;
+/

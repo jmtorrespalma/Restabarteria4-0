@@ -1,0 +1,33 @@
+create or replace trigger comprobar_menos_uno
+before update on empleado
+for each row
+declare
+	id_ger number;
+    	id_coc number;
+    	id_cam number;
+begin
+
+	if (:new.estado = 'Inactivo') then
+		select count(*) into id_ger from gerente where idempleado=:new.idempleado;
+
+
+	end if;
+		
+    	id_emp := :new.idempleado;
+
+    	select count(*) into id_ger from gerente where idempleado=:new.idempleado;
+    
+    if (id_ger=0) then
+      select count(*) into id_coc from cocinero where idempleado=:new.idempleado;
+      if (id_coc=0) then
+          dbms_output.put_line('Ha introducido un camarero con éxito');
+      else
+          dbms_output.put_line('No puede introducir un camarero que ya sea otro tipo de empleado');
+          raise_application_error( -20002, 'No puede introducir un camarero que ya sea otro tipo de empleado');
+      end if;
+    else
+      dbms_output.put_line('No puede introducir un camarero que ya sea otro tipo de empleado');
+      raise_application_error( -20002, 'No puede introducir un camarero que ya sea otro tipo de empleado');
+    end if;
+  
+end;

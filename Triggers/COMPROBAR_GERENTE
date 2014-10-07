@@ -1,0 +1,23 @@
+create or replace trigger comprobar_gerente
+before insert on gerente
+for each row
+declare
+    id_coc number;
+    id_cam number;
+    id_emp number;
+begin
+    id_emp := :new.idempleado;
+    select count(*) into id_coc from cocinero where idempleado=:new.idempleado;
+    
+    if (id_coc=0) then
+      select count(*) into id_cam from camarero where idempleado=:new.idempleado;
+      if (id_cam=0) then
+          dbms_output.put_line('Ha introducido un camarero con éxito');
+      else
+          raise_application_error( -20003, 'No puede introducir un gerente que ya sea otro tipo de empleado');
+      end if;
+    else
+      raise_application_error( -20003, 'No puede introducir un gerente que ya sea otro tipo de empleado');
+    end if;
+  
+end;

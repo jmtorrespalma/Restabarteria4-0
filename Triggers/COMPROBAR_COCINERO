@@ -1,0 +1,25 @@
+create or replace trigger comprobar_cocinero
+before insert on cocinero
+for each row
+declare
+    id_ger number;
+    id_cam number;
+    id_emp number;
+begin
+    id_emp := :new.idempleado;
+    select count(*) into id_ger from gerente where idempleado=:new.idempleado;
+    
+    if (id_ger=0) then
+      select count(*) into id_cam from camarero where idempleado=:new.idempleado;
+      if (id_cam=0) then
+          dbms_output.put_line('Ha introducido un cocinero con éxito');
+      else
+          dbms_output.put_line('No puede introducir un cocinero que ya sea otro tipo de empleado');
+          raise_application_error( -20001, 'No puede introducir un cocinero que ya sea otro tipo de empleado');
+      end if;
+    else
+      dbms_output.put_line('No puede introducir un cocinero que ya sea otro tipo de empleado');
+      raise_application_error( -20001, 'No puede introducir un cocinero que ya sea otro tipo de empleado');
+    end if;
+  
+end;

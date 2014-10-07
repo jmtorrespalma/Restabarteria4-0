@@ -1,0 +1,6 @@
+create or replace PROCEDURE baja (in_idempleado number) IS
+	
+BEGIN
+  update empleado set estado = 'Inactivo' where idempleado=in_idempleado;
+  commit;
+END;

@@ -1,0 +1,28 @@
+create or replace
+PROCEDURE alta (nombre varchar2, posicion varchar2, in_idgerente number default null) IS
+	cuantos number;
+	
+BEGIN
+  select max(idempleado) into cuantos from Empleado;
+  cuantos := cuantos+1;
+  
+  
+  if (posicion = 'gerente') then
+      	insert into Empleado values (cuantos,nombre,'Activo');
+  	insert into Gerente values (cuantos);
+  			
+  elsif (posicion = 'camarero') then
+      	insert into Empleado values (cuantos,nombre,'Activo');
+  	insert into Camarero values (cuantos);
+  
+  elsif (posicion = 'cocinero') then
+      	insert into Empleado values (cuantos,nombre,'Activo');
+  	insert into Cocinero values (cuantos);
+  else
+  	raise_application_error( -20004, 'No puede introducir un tipo de empleado inexistente');
+  end if;
+
+	insert into da_alta values(cuantos, in_idgerente);
+
+  commit;
+END;
